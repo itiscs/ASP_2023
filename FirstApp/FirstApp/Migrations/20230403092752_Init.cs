@@ -32,5 +32,6 @@ namespace FirstApp.Migrations
             migrationBuilder.DropTable(
                 name: "Products");
         }
+
     }
 }
