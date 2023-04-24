@@ -18,11 +18,14 @@ namespace FirstApp.Controllers
             return View();
         }
 
+
+        [Route("MyPage")]
         public IActionResult Privacy()
         {
             return View();
         }
 
+        [Route("About2/{id?}")]
         public IActionResult About(string id)
         {
             ViewBag.Pole1 = "Hello world!";

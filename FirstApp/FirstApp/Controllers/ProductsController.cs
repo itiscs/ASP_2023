@@ -45,6 +45,16 @@ namespace FirstApp.Controllers
             return View(product);
         }
 
+
+        [Route("Apple")]
+        public async Task<IActionResult> Apple()
+        {
+            var product = await _context.Products
+                .FirstOrDefaultAsync(m => m.Id == 1);
+            
+            return View("Details",product);
+        }
+
         // GET: Products/Create
         public IActionResult Create()
         {

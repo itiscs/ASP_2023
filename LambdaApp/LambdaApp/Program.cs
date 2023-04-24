@@ -83,8 +83,11 @@ stud.Add(new Student()
 });
 
 
+int k = 10, n = 100, Nperpage = n/k;
+
+
 var st1 = stud.Where(s => s.Group == "09-911")
-    .OrderByDescending(s =>  s.Marks.Count).Skip(1);
+    .OrderByDescending(s => s.Marks.Count).Skip(1);
 
 foreach(var st in  st1)
 {
