@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebApiFirst.Data;
 using WebApiFirst.Models;
 
 namespace WebApiFirst.Controllers
@@ -13,39 +14,35 @@ namespace WebApiFirst.Controllers
     [ApiController]
     public class TodoItemsController : ControllerBase
     {
-        private readonly ToDoDB _context;
+        private readonly ITodoRepository _repo;
 
-        public TodoItemsController(ToDoDB context)
+        public TodoItemsController(ITodoRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
 
         // GET: api/TodoItems
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoItem>>> GetItems()
         {
-          if (_context.Items == null)
-          {
-              return NotFound();
-          }
-            return await _context.Items.ToListAsync();
+            var items = await _repo.GetAll();
+
+            if (items == null)
+              {
+                  return NotFound();
+              }
+              return Ok(items);
         }
 
         // GET: api/TodoItems/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoItem>> GetTodoItem(long id)
         {
-          if (_context.Items == null)
-          {
-              return NotFound();
-          }
-            var todoItem = await _context.Items.FindAsync(id);
+            var todoItem = await _repo.GetById(id);
 
             if (todoItem == null)
-            {
                 return NotFound();
-            }
-
+          
             return todoItem;
         }
 
@@ -59,23 +56,7 @@ namespace WebApiFirst.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(todoItem).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TodoItemExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _repo.UpdateItem(todoItem);
 
             return NoContent();
         }
@@ -85,12 +66,7 @@ namespace WebApiFirst.Controllers
         [HttpPost]
         public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
         {
-          if (_context.Items == null)
-          {
-              return Problem("Entity set 'ToDoDB.Items'  is null.");
-          }
-            _context.Items.Add(todoItem);
-            await _context.SaveChangesAsync();
+            await _repo.AddItem(todoItem);
 
             return CreatedAtAction("GetTodoItem", new { id = todoItem.Id }, todoItem);
         }
@@ -98,26 +74,14 @@ namespace WebApiFirst.Controllers
         // DELETE: api/TodoItems/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTodoItem(long id)
-        {
-            if (_context.Items == null)
-            {
-                return NotFound();
-            }
-            var todoItem = await _context.Items.FindAsync(id);
-            if (todoItem == null)
-            {
-                return NotFound();
-            }
-
-            _context.Items.Remove(todoItem);
-            await _context.SaveChangesAsync();
-
+        {            
+            await _repo.DeleteById(id);
             return NoContent();
         }
 
         private bool TodoItemExists(long id)
         {
-            return (_context.Items?.Any(e => e.Id == id)).GetValueOrDefault();
+            return true;// (_repo.GetById.GetAll().Result.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
