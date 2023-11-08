@@ -15,11 +15,17 @@ namespace WebApiFirst.Data
         public async Task AddItem(TodoItem item)
         {
             await _context.AddAsync(item);
+            await _context.SaveChangesAsync();
         }
 
-        public Task DeleteById(long id)
+        public async Task DeleteById(long id)
         {
-            throw new NotImplementedException();
+            var item = _context.Items.Find(id);
+            if (item != null)
+            {
+                _context.Remove(item);
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task<IEnumerable<TodoItem>> GetAll()
@@ -32,10 +38,10 @@ namespace WebApiFirst.Data
             return await _context.Items.FindAsync(id);
         }
 
-        public Task UpdateItem(TodoItem item)
+        public async Task UpdateItem(TodoItem item)
         {
             _context.Update(item);
-            return Task.CompletedTask;
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -79,9 +79,6 @@ namespace WebApiFirst.Controllers
             return NoContent();
         }
 
-        private bool TodoItemExists(long id)
-        {
-            return true;// (_repo.GetById.GetAll().Result.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+        
     }
 }
